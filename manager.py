@@ -10,6 +10,7 @@
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import redis
 
 app = Flask(__name__)
 
@@ -20,15 +21,25 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:kaikai.@127.0.0.1:3306/information"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # 配置redis的ip地址和端口
+    REDIS_HOST = "127.0.0.1"
+    REDIS_PORT = 6379
+
 
 # 通过类的方式加载配置信息
 app.config.from_object(Config)
 # 创建SQLAlchemy对象，关联app
 db = SQLAlchemy(app)
 
+# 创建redis对象
+redis_store = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
+
 
 @app.route("/")
 def hello():
+    # 测试redis存储数据
+    redis_store.set("name", "二狗")
+
     return "hello world"
 
 
